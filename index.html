@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7 Days Name Lock System</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .top-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            width: 260px;
+        }
+
+        .input-group label {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .name-input {
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .name-input:focus {
+            border-color: #00ea8c;
+        }
+
+        .name-input:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            border-color: #ced4da;
+            cursor: not-allowed;
+        }
+
+        /* အတည်ပြုရန် ခလုတ် Style */
+        .confirm-btn {
+            background-color: #00ea8c;
+            color: #111;
+            border: none;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 260px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .confirm-btn:hover {
+            background-color: #00cc7a;
+        }
+
+        .confirm-btn:disabled {
+            background-color: #bdc3c7;
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        /* Download နှင့် Ads ကူညီရန် ခလုတ် Style */
+        .ad-watch-box {
+            text-align: center;
+            cursor: pointer;
+            background-color: #ff4757;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+            margin-top: 10px;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .ad-watch-box:hover {
+            transform: scale(1.05);
+            background-color: #ff2e44;
+        }
+
+        .ad-watch-box i {
+            font-size: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .warning-text {
+            color: #ff4757;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* အောက်ခြေ Icon Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .icon-box {
+            font-size: 26px;
+            color: #555555;
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+            padding: 10px;
+        }
+
+        .icon-box:hover { transform: scale(1.15); }
+        .home-icon:hover { color: #1e90ff; }
+        .user-icon:hover { color: #2ed573; }
+        .bottom-ad-icon:hover { color: #ff4757; }
+    </style>
+</head>
+<body>
+
+    <div class="top-container">
+        <div class="input-group">
+            <label for="username">$\text{အမည်သတ်မှတ်ပါ}$</label>
+            <input type="text" id="username" class="name-input" placeholder="အမည်ရိုက်ထည့်ပါ...">
+            <div id="warningMsg" class="warning-text">⚠️ အမည် ပြောင်းလဲခွင့်ကို ၇ ရက် ပိတ်ထားပါသည်။</div>
+        </div>
+
+        <button id="confirmBtn" class="confirm-btn" onclick="confirmName()">
+            <i class="fa-solid fa-check-circle"></i> အတည်ပြုမည်
+        </button>
+        
+        <div id="adBtn" class="ad-watch-box" onclick="watchAd()">
+            <i class="fa-solid fa-download"></i> 
+            <span id="btnText">နှိပ်ပါ download လုပ်ပြီးကူညီပါ</span>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="icon-box home-icon" onclick="showAlert('Home')"><i class="fa-solid fa-house"></i></div>
+        <div class="icon-box user-icon" onclick="showAlert('User Profile')"><i class="fa-solid fa-user"></i></div>
+        <div class="icon-box bottom-ad-icon" onclick="showAlert('Bottom Advertisement')"><i class="fa-solid fa-ad"></i></div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            checkLockStatus();
+        };
+
+        function showAlert(iconName) {
+            alert(iconName + " ကို နှိပ်လိုက်ပါပြီ။");
+        }
+
+        function confirmName() {
+            let inputField = document.getElementById("username");
+            let userName = inputField.value.trim();
+
+            if (userName === "") {
+                alert("ကျေးဇူးပြု၍ အမည်တစ်ခုခု ရိုက်ထည့်ပါ။");
+                return;
+            }
+
+            let currentTime = new Date().getTime();
+            localStorage.setItem("savedName", userName);
+            localStorage.setItem("lockTime", currentTime);
+
+            alert("အမည်ကို အတည်ပြုလိုက်ပါပြီ။ ယနေ့မှစ၍ ၇ ရက်ပြည့်မှသာ အသစ်ပြန်ပြောင်းနိုင်ပါမည်။");
+            checkLockStatus();
+        }
+
+        function checkLockStatus() {
+            let inputField = document.getElementById("username");
+            let confirmBtn = document.getElementById("confirmBtn");
+            let warningMsg = document.getElementById("warningMsg");
+
+            let savedName = localStorage.getItem("savedName");
+            let lockTime = localStorage.getItem("lockTime");
+
+            if (savedName && lockTime) {
+                let currentTime = new Date().getTime();
+                let sevenDaysInMs = 7 * 24 * 60 * 60 * 1000; 
+
+                if (currentTime - lockTime < sevenDaysInMs) {
+                    inputField.value = savedName;
+                    inputField.disabled = true;  
+                    confirmBtn.disabled = true;   
+                    warningMsg.style.display = "block";
+                    
+                    let timeLeft = sevenDaysInMs - (currentTime - lockTime);
+                    let daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+                    warningMsg.innerText = `⚠️ အမည်ကို ပြန်ပြောင်းရန် ${daysLeft} ရက် စောင့်ရပါမည်။`;
+                } else {
+                    localStorage.removeItem("savedName");
+                    localStorage.removeItem("lockTime");
+                    inputField.disabled = false;
+                    confirmBtn.disabled = false;
+                    warningMsg.style.display = "none";
+                }
+            }
+        }
+
+        // Ads Link သို့ ခေါ်ဆောင်သွားမည့် လုပ်ငန်းစဉ်
+        function watchAd() {
+            let savedName = localStorage.getItem("savedName");
+            if (!savedName) {
+                alert("မလုပ်ဆောင်ခင် အမည်ကို အရင်ရိုက်ထည့်ပြီး 'အတည်ပြုမည်' ကို နှိပ်ပေးပါ။");
+                return;
+            }
+
+            // သင်ပေးထားသော Ads Link URL
+            let adsLink = "https://www.effectivecpmnetwork.com/s82barr5i?key=1f0b8a7e0556806e4f940c2063260c02";
+            
+            // Link အား Window အသစ် (Tab အသစ်) ဖြင့် ဖွင့်လှစ်ပေးခြင်း
+            window.open(adsLink, '_blank');
+        }
+    </script>
+
+</body>
+</html>
